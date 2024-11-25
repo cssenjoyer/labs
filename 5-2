@@ -1,0 +1,136 @@
+/*В двумерной матрице размером NxM найти столбец с наибольшей
+суммой элементов и удалить его.*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX_SIZE 1000
+
+// функция для безопасного ввода чисел
+void inputvalue(int* value) {
+    while (1) {
+        printf("enter a number: ");
+        if (scanf_s("%d", value) == 1) {
+            break;
+        }
+        else {
+            printf("error.\n");
+            while (getchar() != '\n');
+        }
+    }
+}
+
+int main() {
+    int N, M;
+    char initchoice;
+
+    // ввод количества строк и столбцов
+    printf("enter the number of rows (less than %d): ", MAX_SIZE);
+    inputvalue(&N);
+
+
+    printf("enter the number of columns (less than %d): ", MAX_SIZE);
+    inputvalue(&M);
+
+    if (N > MAX_SIZE || M > MAX_SIZE) {
+        printf("error\n");
+        return 1;
+    }
+
+    // выделение памяти для исходной матрицы
+    int** arr = (int**)malloc(N * sizeof(int*));
+    if (arr == NULL) {
+        printf("memory allocation failed!\n");
+        return 1;
+    }
+    for (int i = 0; i < N; i++) {
+        arr[i] = (int*)malloc(M * sizeof(int));
+        if (arr[i] == NULL) {
+            printf("memory allocation failed!\n");
+            return 1;
+        }
+    }
+
+    while (getchar() != '\n'); // очистка буфера перед вводом символа
+
+    // выбор способа заполнения матрицы
+    printf("to fill the array with random numbers press r/R. press any other key to do it manually: ");
+    scanf_s("%c", &initchoice, 1);
+
+    if (initchoice == 'r' || initchoice == 'R') {
+        srand(time(NULL));
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                arr[i][j] = rand() % 200 - 100; // диапазон [-100, 99]
+            }
+        }
+        printf("array initialized with random numbers!\n");
+    }
+    else {
+        // ввод элементов матрицы вручную
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                printf("element [%d][%d]: ", i + 1, j + 1);
+                inputvalue(&arr[i][j]);
+            }
+        }
+    }
+
+    // вывод исходной матрицы
+    printf("matrix elements: \n");
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            printf("%d ", arr[i][j]);
+        }
+        printf("\n");
+    }
+
+    // поиск столбца с максимальной суммой
+    int maxcolsum = -1;
+    int maxcolindex = -1;
+
+    for (int j = 0; j < M; j++) {
+        int colsum = 0;
+        for (int i = 0; i < N; i++) {
+            colsum += arr[i][j];
+        }
+        if (colsum > maxcolsum) {
+            maxcolsum = colsum;
+            maxcolindex = j;
+        }
+    }
+
+    // создание нового массива без столбца с максимальной суммой
+    int** newarr = (int**)malloc(N * sizeof(int*));
+    for (int i = 0; i < N; i++) {
+        newarr[i] = (int*)malloc((M - 1) * sizeof(int));
+    }
+
+    for (int i = 0; i < N; i++) {
+        int newcolindex = 0;
+        for (int j = 0; j < M; j++) {
+            if (j != maxcolindex) {
+                newarr[i][newcolindex++] = arr[i][j];
+            }
+        }
+    }
+
+    // вывод новой матрицы после удаления столбца
+    printf("matrix after removing column %d with maximum sum: \n", maxcolindex + 1);
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M - 1; j++) {
+            printf("%d ", newarr[i][j]);
+        }
+        printf("\n");
+    }
+
+    // освобождение памяти
+    for (int i = 0; i < N; i++) {
+        free(arr[i]);
+        free(newarr[i]);
+    }
+    free(arr);
+    free(newarr);
+
+    return 0;
+}
