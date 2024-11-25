@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX_SIZE 10 // Максимальное количество строк и столбцов
+
+void inputvalueelement(int* value) {
+    while (1) {
+        if (scanf_s("%d", value) == 1) {
+            break;
+        }
+        else {
+            printf("Error, please enter a valid integer!\n");
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+}
+
+int main() {
+    int N, M;
+
+    // Ввод количества строк
+    while (1) {
+        printf("Enter the number of rows (N, max %d): ", MAX_SIZE);
+        if (scanf_s("%d", &N) == 1 && N > 0 && N <= MAX_SIZE) {
+            break;
+        }
+        else {
+            printf("Error, please enter a positive integer between 1 and %d!\n", MAX_SIZE);
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+
+    // Ввод количества столбцов
+    while (1) {
+        printf("Enter the number of cols (M, max %d): ", MAX_SIZE);
+        if (scanf_s("%d", &M) == 1 && M > 0 && M <= MAX_SIZE) {
+            break;
+        }
+        else {
+            printf("Error, please enter a positive integer between 1 and %d!\n", MAX_SIZE);
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+
+    // Создание двумерного массива
+    int** matrix = (int**)malloc(N * sizeof(int*));
+    for (int i = 0; i < N; i++) {
+        matrix[i] = (int*)malloc(M * sizeof(int));
+    }
+
+    // Выбор способа заполнения матрицы
+    printf("Do you want to fill the matrix with random numbers? (y/n): ");
+    char choice;
+    while (getchar() != '\n'); // очистка буфера
+    choice = getchar();
+
+    if (choice == 'y' || choice == 'Y') {
+        srand(time(NULL)); // инициализация генератора случайных чисел
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                matrix[i][j] = rand() % 100; // случайные числа от 0 до 99
+            }
+        }
+        printf("Matrix filled with random numbers.\n");
+    }
+    else {
+        // Ввод элементов массива вручную
+        printf("Enter elements of the array: \n");
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                printf("Element [%d][%d]: ", i, j);
+                inputvalueelement(&matrix[i][j]);
+            }
+        }
+    }
+
+    // Вывод исходной матрицы
+    printf("\nOriginal matrix: \n");
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+
+    // Удаление элементов ниже побочной диагонали
+    printf("\nMatrix after removing elements below the secondary diagonal: \n");
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            if (i + j <= M - 1) {
+                printf("%d ", matrix[i][j]);
+            }
+            else {
+                printf("0 ");
+            }
+        }
+        printf("\n");
+    }
+
+    // Освобождение памяти
+    for (int i = 0; i < N; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+
+    return 0;
+}
