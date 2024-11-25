@@ -1,0 +1,125 @@
+/* Найти в матрице первый столбец, все элементы которого отрицательны, и среднее
+арифметическое этих элементов. Вычесть полученное значение из всех элементов матрицы */
+
+#include <stdio.h>
+#include <locale.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX_SIZE 100
+
+int main()
+{
+	setlocale(LC_ALL, "RUS");
+
+	int rows, cols;
+	int matrix[MAX_SIZE][MAX_SIZE];
+
+	// Ввод размера матрицы
+	printf("Введите количество строк матрицы (от 1 до %d): ", MAX_SIZE);
+	while (1) {
+		if (scanf_s("%d", &rows) != 1 || rows < 1 || rows > MAX_SIZE) {
+			printf("Ошибка ввода. Введите корректное значение: ");
+			while (getchar() != '\n');
+		}
+		else break;
+	}
+
+	printf("Введите количество столбцов матрицы (от 1 до %d): ", MAX_SIZE);
+	while (1) {
+		if (scanf_s("%d", &cols) != 1 || cols < 1 || cols > MAX_SIZE) {
+			printf("Ошибка ввода. Введите корректное значение: ");
+			while (getchar() != '\n');
+		}
+		else break;
+	}
+
+	// Выбор способа инициализации матрицы
+	int choice;
+	printf("Выберите способ инициализации матрицы:\n1 - ввод с клавиатуры\n2 - случайные значения\nВаш выбор: ");
+	scanf_s("%d", &choice);
+
+	if (choice == 1) {
+		// Ввод элементов матрицы с клавиатуры
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				printf("Введите элемент matrix[%d][%d]: ", i, j);
+				while (scanf_s("%d", &matrix[i][j]) != 1) {
+					printf("Ошибка ввода. Введите элемент matrix[%d][%d]: ", i, j);
+					while (getchar() != '\n');
+				}
+			}
+		}
+	}
+	else if (choice == 2) {
+		// Заполнение матрицы случайными значениями
+		srand(time(NULL));
+		int lower = -10, upper = 10;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				matrix[i][j] = lower + rand() % (upper - lower + 1);
+			}
+		}
+		printf("Сгенерированная матрица:\n");
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				printf("%4d ", matrix[i][j]);
+			}
+			printf("\n");
+		}
+	}
+	else {
+		printf("Неверный выбор. Завершение программы.\n");
+		return 1;
+	}
+
+	// Нахождение первого столбца, все элементы которого отрицательны
+	int found_col = -1;
+	double avg = 0.0;
+	int sum = 0;
+
+	for (int j = 0; j < cols; j++) {
+		int all_negative = 1;
+		for (int i = 0; i < rows; i++) {
+			if (matrix[i][j] >= 0) {
+				all_negative = 0;
+				break;
+			}
+		}
+		if (all_negative) {
+			found_col = j;
+			break;
+		}
+	}
+
+	if (found_col != -1) {
+		// Вычисление среднего арифметического отрицательного столбца
+		for (int i = 0; i < rows; i++) {
+			sum += matrix[i][found_col];
+		}
+		avg = (double)sum / rows;
+		int int_avg = (int)avg;
+
+		// Вычитание среднего из всех элементов матрицы
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				matrix[i][j] -= int_avg;
+			}
+		}
+
+		// Вывод модифицированной матрицы
+		printf("Модифицированная матрица:\n");
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				printf("%6.2f ", (double)matrix[i][j]);
+			}
+			printf("\n");
+		}
+		printf("Среднее арифметическое элементов первого отрицательного столбца: %.2f\n", avg);
+	}
+	else {
+		printf("Нет столбца, где все элементы отрицательны.\n");
+	}
+
+	return 0;
+}
