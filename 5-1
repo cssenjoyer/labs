@@ -1,6 +1,5 @@
 /*Заполнить массив натуральными числами с клавиатуры. Удалить из
 массива все двузначные числа.*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -9,25 +8,25 @@
 
 void inputvalue(int* value) {
     while (1) {
-        printf("enter a natural number: ");
-        if (scanf_s("%d", value) == 1 && *value > 0) {  // проверяем, что число положительное
+        printf("Enter a natural number: ");
+        if (scanf_s("%d", value) == 1 && *value > 0) {
             break;
         }
         else {
-            printf("error, only positive natural numbers allowed!\n");
-            while (getchar() != '\n');  // очистка буфера ввода
+            printf("Error, only positive natural numbers allowed!\n");
+            while (getchar() != '\n'); // очистка буфера ввода
         }
     }
 }
 
 void inputvalueelement(int* value) {
     while (1) {
-        if (scanf_s("%d", value) == 1 && *value > 0) {  // проверяем, что введенное число положительное
+        if (scanf_s("%d", value) == 1 && *value > 0) {
             break;
         }
         else {
-            printf("error, only positive natural numbers allowed!\n");
-            while (getchar() != '\n');  // очистка буфера ввода
+            printf("Error, only positive natural numbers allowed!\n");
+            while (getchar() != '\n'); // очистка буфера ввода
         }
     }
 }
@@ -39,38 +38,42 @@ int main() {
     int new_size = 0;
     char initchoice;
 
-    printf("enter the size of the array (less than %d): ", MAX_SIZE);
-    scanf_s("%d", &n);
-
-    if (n <= 0 || n > MAX_SIZE) {
-        printf("error, invalid size! ");
-        return 1;
+    while (1) {
+        printf("Enter the size of the array (less than %d): ", MAX_SIZE);
+        if (scanf_s("%d", &n) == 1 && n > 0 && n <= MAX_SIZE) {
+            break;
+        }
+        else {
+            printf("Error, invalid size! Please try again.\n");
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
     }
 
     arr = (int*)malloc(n * sizeof(int));  // выделяем память для массива arr
-    if (arr == NULL) { // проверка на успешное выделение памяти
-        printf("memory allocation failed! ");
+    if (arr == NULL) {
+        printf("Memory allocation failed! ");
         return 1;
     }
 
     // очищаем буфер перед вводом символа
     while (getchar() != '\n');
 
-    printf("to fill the array with random numbers (1 to 99), press r/R. Press any other key to enter manually: ");
-    scanf_s("%c", &initchoice, 1);  // пробел перед %c для корректного чтения
+    printf("To fill the array with random numbers (1 to 99), press r/R. Press any other key to enter manually: ");
+    initchoice = getchar();
+    while (getchar() != '\n'); // очистка буфера после символа
 
     if (initchoice == 'r' || initchoice == 'R') {
-        srand(time(NULL));  // инициализация генератора случайных чисел
+        srand(time(NULL));
         for (int i = 0; i < n; i++) {
             arr[i] = rand() % 99 + 1;  // генерация случайных чисел от 1 до 99
         }
-        printf("array initialized with random numbers!\n");
+        printf("Array initialized with random numbers!\n");
     }
     else {
-        printf("enter %d natural numbers:\n", n);
+        printf("Enter %d natural numbers:\n", n);
         for (int i = 0; i < n; i++) {
-            printf("element %d: ", i + 1);
-            inputvalueelement(&arr[i]);  // ввод элементов массива
+            printf("Element %d: ", i + 1);
+            inputvalueelement(&arr[i]);
         }
     }
 
@@ -82,16 +85,14 @@ int main() {
     printf("\n");
 
     // создание нового массива без двузначных чисел
-    newarr = (int*)malloc(n * sizeof(int));  // выделяем память для нового массива
+    newarr = (int*)malloc(n * sizeof(int));
     if (newarr == NULL) {
-        printf("memory allocation failed! ");
+        printf("Memory allocation failed! ");
         free(arr);
         return 1;
     }
 
-    // копирование чисел, которые не являются двузначными
     for (int i = 0; i < n; i++) {
-        // удаляем двузначные числа (10-99)
         if (arr[i] < 10 || arr[i] > 99) {
             newarr[new_size] = arr[i];
             new_size++;
@@ -99,15 +100,17 @@ int main() {
     }
 
     // вывод массива после удаления двузначных чисел
-    printf("array after removing two-digit numbers: \n");
+    printf("Array after removing two-digit numbers: \n");
     for (int i = 0; i < new_size; i++) {
         printf("%d ", newarr[i]);
     }
     printf("\n");
 
-    // освобождаем память
     free(arr);
     free(newarr);
+
+    return 0;
+}
 
     return 0;
 }
