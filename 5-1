@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX_SIZE 1000
+
+void inputvalue(int* value) {
+    while (1) {
+        printf("Enter a natural number: ");
+        if (scanf_s("%d", value) == 1 && *value > 0) {
+            break;
+        }
+        else {
+            printf("Error, only positive natural numbers allowed!\n");
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+}
+
+void inputvalueelement(int* value) {
+    while (1) {
+        if (scanf_s("%d", value) == 1 && *value > 0) {
+            break;
+        }
+        else {
+            printf("Error, only positive natural numbers allowed!\n");
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+}
+
+int main() {
+    int n;
+    int* arr;
+    int* newarr;
+    int new_size = 0;
+    char initchoice;
+
+    while (1) {
+        printf("Enter the size of the array (less than %d): ", MAX_SIZE);
+        if (scanf_s("%d", &n) == 1 && n > 0 && n <= MAX_SIZE) {
+            break;
+        }
+        else {
+            printf("Error, invalid size! Please try again.\n");
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+
+    arr = (int*)malloc(n * sizeof(int));  // выделяем память для массива arr
+    if (arr == NULL) {
+        printf("Memory allocation failed! ");
+        return 1;
+    }
+
+    // очищаем буфер перед вводом символа
+    while (getchar() != '\n');
+
+    printf("To fill the array with random numbers (1 to 99), press r/R. Press any other key to enter manually: ");
+    initchoice = getchar();
+    while (getchar() != '\n'); // очистка буфера после символа
+
+    if (initchoice == 'r' || initchoice == 'R') {
+        srand(time(NULL));
+        for (int i = 0; i < n; i++) {
+            arr[i] = rand() % 99 + 1;  // генерация случайных чисел от 1 до 99
+        }
+        printf("Array initialized with random numbers!\n");
+    }
+    else {
+        printf("Enter %d natural numbers:\n", n);
+        for (int i = 0; i < n; i++) {
+            printf("Element %d: ", i + 1);
+            inputvalueelement(&arr[i]);
+        }
+    }
+
+    // вывод исходного массива
+    printf("Your array: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    // создание нового массива без двузначных чисел
+    newarr = (int*)malloc(n * sizeof(int));
+    if (newarr == NULL) {
+        printf("Memory allocation failed! ");
+        free(arr);
+        return 1;
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (arr[i] < 10 || arr[i] > 99) {
+            newarr[new_size] = arr[i];
+            new_size++;
+        }
+    }
+
+    // вывод массива после удаления двузначных чисел
+    printf("Array after removing two-digit numbers: \n");
+    for (int i = 0; i < new_size; i++) {
+        printf("%d ", newarr[i]);
+    }
+    printf("\n");
+
+    free(arr);
+    free(newarr);
+
+    return 0;
+}
